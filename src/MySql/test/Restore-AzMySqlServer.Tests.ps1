@@ -15,17 +15,15 @@ while(-not $mockingPath) {
 # See https://github.com/Azure/autorest.powershell/issues/580
 Describe 'Restore-AzMySqlServer' {
     It 'GeoRestore' {
-        $server = Get-AzMySqlServer -ResourceGroupName $env.resourceGroup -ServerName $env.serverName
-        $replica = New-AzMySqlReplica -InputObject $server -Replica $env.replicaName -ResourceGroupName $env.resourceGroup
-        $restoreServer = Restore-AzMySqlServer -Name $env.serverName -ResourceGroupName $env.resourceGroup -InputObject $replica -UseGeoRestore
+        $replica = Get-AzMySqlServer -ResourceGroupName $env.resourceGroup -ServerName $env.serverName | New-AzMySqlReplica -Replica $env.replicaName -ResourceGroupName $env.resourceGroup
+        $restoreServer = Restore-AzMySqlServer -Name $env.serverName -ResourceGroupName $env.resourceGroup -InputObject $replica -UseGeoRestore 
         $restoreServer.Name | Should -Be $env.serverName
         $restoreServer.SkuName | Should -Be $env.Sku
     }
 
     It 'PointInTimeRestore' {
-        $server = Get-AzMySqlServer -ResourceGroupName $env.resourceGroup -ServerName $env.serverName
         $restorePointInTime = (Get-Date).AddMinutes(-10)
-        $restoreServer = Restore-AzMySqlServer -InputObject $server -Name $env.restoreName2 -ResourceGroupName $env.resourceGroup -RestorePointInTime $restorePointInTime -UsePointInTimeRestore
+        $restoreServer = Get-AzMySqlServer -ResourceGroupName $env.resourceGroup -ServerName $env.serverName | Restore-AzMySqlServer -Name $env.restoreName2 -ResourceGroupName $env.resourceGroup -RestorePointInTime $restorePointInTime -UsePointInTimeRestore
         $restoreServer.Name | Should -Be $env.restoreName2
         $restoreServer.SkuName | Should -Be $env.Sku
     }

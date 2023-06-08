@@ -13,8 +13,7 @@ while(-not $mockingPath) {
 
 Describe 'New-AzMySqlReplica' {
     It 'CreateExpanded' {
-        $server = Get-AzMySqlServer -ResourceGroupName $env.resourceGroup -ServerName $env.serverName
-        $replica = New-AzMySqlReplica -InputObject $server -Replica $env.replicaName -ResourceGroupName $env.resourceGroup
+        $replica = Get-AzMySqlServer -ResourceGroupName $env.resourceGroup -ServerName $env.serverName | New-AzMySqlReplica -Replica $env.replicaName -ResourceGroupName $env.resourceGroup 
         $replica.Name | Should -Be $env.replicaName
         $replica.SkuName | Should -Be $env.Sku
         $replica.Location | Should -Be eastus
